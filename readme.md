@@ -14,14 +14,22 @@
     - this will print the string to the terminal
     ```ECHO "something to print on screen" ```
 
-     - this is called key/value pair where foo is the key and 100 is the value.
+    - this is called key/value pair where foo is the key and 100 is the value.
     ```SET foo 100```
+    - this will only set a key if it doesnt already exists
+    ``` SETNX foo "this will not work" ``` ```SETNX foo2 "this will work"```
     - This will return a string that looks like this: "100"
     ``` GET foo  ```
     - This will increment by 1 and return it as a integer so youll get (integer) 101
     ``` INCR foo ```
-    - This will deincrement by 1 so it will return: (integer) 100
+    - This will decrease by 1 so it will return: (integer) 100
     ``` DECR foo ```
+    - This will increment by a specified amount
+    ``` INCRBY foo 3 ```
+    - This will decrease by a specified amount
+    ``` DECRBY foo 3 ```
+    - This will return old value then reset the value. i.e. return: 100 set: 200
+    ``` GETSET foo 200 ```
     - This will return 0 or 1 depending if the variable exists so the return will be: (integer) 1
     ```
         SET bar 1
@@ -31,6 +39,43 @@
     ``` DEL bar ```
     - This is like a cache clear so if we type GET bar it will reply (nil) because it does exist anymore
     ``` FLUSHALL ```
+
+    - This will set multiple keys to respective values
+    ``` MSET Dog1 "Hazel" Dog2 "Max" Dog3 "molly" ```
+
+    - this will set multiple keys as long as none of the keys already exist, because dog1 already exist this command will not run, i.e. dog4 will never get set.
+    ``` MSETNX Dog4 "billy" Dog1 "mike" ```
+
+    - this will get multiple keys values. i.e. "Hazel" "Max"
+    ``` MGET Dog1 Dog2 ```
+    - this appends to an exisiing string, if the key does not exist it will work like a SET Command
+    ``` APPEND Dog1 " the third" ```
+    ``` APPEND Dog4 "billy" ```
+
+    - this returns the substring of a string values. i.e. "Hazel the" will be returned
+    ``` GETRANGE Dog1 0 8 ```
+      - this will return the whole string. i.e. "Hazel the third"
+      ``` GETRANGE Dog1 0 -1 ```
+
+    - this will rename a key, note: if myRenamedKey exist it will be over written. if the myKey doesnt exist it will throw an error
+    ``` RENAME myKey myRenamedKey ```
+    - this will rename a key, only if the myRenamedKey doesnt exist, if it does it will throw an error
+    ``` RENAMENX myKey myRenamedKey ```
+
+    - this will set a key to hold a value and timeout after a given amount of seconds.
+    ``` SETEX myKey 60 "Hello" ```
+    Note: this is equivalent to
+    ```
+    SET mykey "Hello"
+    EXPIRE mykey 60
+    ```
+    - This is the same as SETEX expect it uses milliseconds
+    ``` PSETEX myKey 6000 "Hello" ```
+    - This shows the remaining time in milliseconds
+    ``` PTTL myKey ```
+    - This will remove any timeout that has been set so a value doesnt expire
+    ``` PERSIST myKey ```
+
 
   #### Setting objects
     ```
