@@ -419,3 +419,11 @@
 # Node.js and redis
   to start use node app
   make sure redis server is open. from lecture 26
+  also need to add task to redis for them to appear. i used
+  127.0.0.1:6379> LPUSH tasks "walk stella
+(integer) 2
+127.0.0.1:6379> LPUSH tasks "feed stella
+(integer) 3
+127.0.0.1:6379> LPUSH tasks "buy jeans"
+(integer) 4
+127.0.0.1:6379> LPUSH tasks "see movie"

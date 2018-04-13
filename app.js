@@ -30,6 +30,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', function(req,res){
   var title = 'Task List';
 
+app.post('/task/add', function(req,res){
+  var task = req.body.task;
+  client.rpush('tasks', task, function(err, data){
+    if(err){
+      console.log(err);
+    } else {
+      console.log('Task added')
+      res.redirect('/')
+    }
+  });
+});
+
   //you can use normal redis command here, so lrange ( the list name, the beginning of teh list setion you want, the end point)
   // note 0 -1 will retreive all items in the list.
   client.lrange('tasks', 0, -1, function(err, data){
