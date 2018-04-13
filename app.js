@@ -27,26 +27,36 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 //root path that renders index.ejs
-app.get('/', function(req,res){
-  var title = 'Task List';
+app.get('/', function(req, res){
+	var title = 'Task List';
 
-app.post('/task/add', function(req,res){
-  var task = req.body.task;
-  client.rpush('tasks', task, function(err, data){
-    if(err){
-      console.log(err);
-    } else {
-      console.log('Task added')
-      res.redirect('/')
-    }
-  });
+	client.lrange('tasks', 0, -1, function(err, reply){
+		client.hgetall('call', function(err, call){
+			res.render('index', {
+			title: title,
+			tasks: reply,
+			call: call
+		});
+		});
+	});
+});
+
+app.post('/task/add', function(req, res){
+	var task = req.body.task;
+
+	client.rpush('tasks', task, function(err, reply){
+		if(err){
+			console.log(err);
+		}
+		console.log('Task Added...');
+		res.redirect('/');
+	});
 });
 
 app.post('/task/remove', function(req,res){
   var tasksToDel = req.body.tasks;
   client.lrange('tasks', 0, -1, function(err,tasks){
       for(var i=0; i< tasks.length; i++){
-        console.log('Task removed'+ i);
         //if the task to delete is in the array of tasks, than delete
         if(tasksToDel.indexOf(tasks[i]) > -1){
           client.lrem('tasks', 0, tasks[i], function(){
@@ -61,21 +71,22 @@ app.post('/task/remove', function(req,res){
   });
 });
 
-  //you can use normal redis command here, so lrange ( the list name, the beginning of teh list setion you want, the end point)
-  // note 0 -1 will retreive all items in the list.
-  client.lrange('tasks', 0, -1, function(err, data){
-    //we can bring the render function inside here,
-    res.render('index', {
-      title: title,
-      tasks: data,
-    });
-  });
+app.post('/call/add', function(req, res){
+	var newCall = {};
+
+	newCall.name = req.body.name;
+	newCall.company = req.body.company;
+	newCall.phone = req.body.phone;
+	newCall.time = req.body.time;
+
+	client.hmset('call', ['name', newCall.name, 'company', newCall.company, 'phone', newCall.phone, 'time', newCall.time], function(err, reply){
+		if(err){
+			console.log(err);
+		}
+		console.log(reply);
+		res.redirect('/');
+	});
 });
-
-
-// res.render('index', {
-//   title: title
-// });
 
 //start the server at port 4484(you can choice the port of your choice)
 app.listen(4484);
