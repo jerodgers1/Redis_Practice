@@ -1,3 +1,12 @@
+<style>
+    .del:checked + span{
+      color: red;
+    }
+    .task-list{
+      list-style:none;
+    }
+</style>
+
 <h3>Add Task</h3>
 <form method="post" action="/task/add">
   <label>Add Tasks</label>
@@ -8,8 +17,20 @@
 <h4>
   <%= title %>
 </h4>
-<ul>
-<% tasks.forEach(function(task){ %>
-    <li><%=task%> </li>
-<% }) %>
-</ul>
+
+  <!-- this will create a form around the task list so the user can delete the information-->
+<form method="post" action="/task/remove">
+  <ul class="task-list">
+    <% tasks.forEach(function(task){ %>
+      <li>
+        <label>
+          <input type="checkbox" name="tasks" class="del" value="<%= task %>">
+            <span>
+                <%=task%>
+            </span>
+        </label>
+       </li>
+    <% }) %>
+  </ul>
+  <input type="submit" value="remove"/>
+</form>

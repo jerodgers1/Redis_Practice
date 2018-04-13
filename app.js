@@ -42,6 +42,25 @@ app.post('/task/add', function(req,res){
   });
 });
 
+app.post('/task/remove', function(req,res){
+  var tasksToDel = req.body.tasks;
+  client.lrange('tasks', 0, -1, function(err,tasks){
+      for(var i=0; i< tasks.length; i++){
+        console.log('Task removed'+ i);
+        //if the task to delete is in the array of tasks, than delete
+        if(tasksToDel.indexOf(tasks[i]) > -1){
+          client.lrem('tasks', 0, tasks[i], function(){
+            if(err){
+              console.log(err);
+            }
+            console.log('Task removed');
+          })
+        }
+      }
+      res.redirect('/');
+  });
+});
+
   //you can use normal redis command here, so lrange ( the list name, the beginning of teh list setion you want, the end point)
   // note 0 -1 will retreive all items in the list.
   client.lrange('tasks', 0, -1, function(err, data){
