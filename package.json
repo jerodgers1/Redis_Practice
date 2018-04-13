@@ -1,0 +1,27 @@
+{
+  "name": "redis_task_list",
+  "version": "1.0.0",
+  "description": "- start server by\r  - cd Program Files\\Redis\r  - redis-server redis.windows.conf",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jerodgers1/Redis_Practice.git"
+  },
+  "author": "James Rodgers",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jerodgers1/Redis_Practice/issues"
+  },
+  "homepage": "https://github.com/jerodgers1/Redis_Practice#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "ejs": "^2.5.8",
+    "express": "^4.16.3",
+    "morgan": "^1.9.0",
+    "nodemon": "^1.17.3",
+    "redis": "^2.8.0"
+  }
+}

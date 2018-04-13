@@ -316,3 +316,106 @@
 
     -HSTRLEN returns the string length of the value associated with the field in the hash.
     ```HSTRLEN user1 name```
+
+### Data Persistence
+  - Datasets are all stored in memory
+  - Datasets can be saved to disk, also called persistence data.
+  - Redis fork - Creating child processes which are an exact copy of the parent
+  - Copy-On-Write Snapshot
+
+  ##### Persistence Process (Generalized)
+    1) client sends write command to database (client memory)
+    2) Database receives the write (Server memory)
+    3) Database calls system call that writes data on disk (Kernel buffer) (final stage is no data persistence is set up)
+    4) The OS transfers the write buffer to the disk controller (Disk Cache)
+    5) Disk controller writes to physical media (Physical Disk)
+
+  ### Pools
+    - a pool is where you can have multiple redis servers running on the same machine using different ports.
+      this gives us added benefits.
+      - efficient memory usage
+      - more CPUs
+      - Better fine-tuning.
+
+  ### Replication
+    - simple master-slave replication allows slave redis servers to be copies of master servers.
+      the benefits of this are:
+      - Asynchronous Replication
+      - multiple slaves
+      - Connection from other slaves
+      - non blocking on slave side
+      - Scalability & data redundancy
+      - slave read-only
+
+    ##### Replication Process
+    1) Master starts saving in the background and starts buffering all new commands that will modify the dataset.
+    2) After background saving, the master transfers the database file to the slave.
+    3) the slave saves the files to the disk and loads it into memory
+    4) the master sends all buffered commands to the slave.
+
+  ### RDB - Redis Database File
+    - simplest persistence mode
+    - enable by default
+    - single-file point-in-time representation
+    - uses snapshots.
+
+    ##### RDB Advantages
+    - easy to use
+    - very compact
+    - perfect for backup and recovery
+    - maximizes redis performace
+    - allows faster restarts with big datasets compared to AOF
+
+    ##### RDB Disadvantages
+    - limited to save points, another words lets say the data sets are saved every 15 minutes, if there is some type of issue you could lose up to 15 mins of writes.
+    - not good if you want to minimize the change of data loss if redis stops working
+    - needs to fork() often which can be time consuming and can wear on CPU performance.
+
+  ### Snapshotting
+    - Controlled by the user
+    - Can be modified at runtime
+    - Snapshots are produced as .rbd files.
+    - SAVE & BGSAVE Commands.
+
+    ##### Save & BGSave
+      - `Save` performs a synchronous save of the dataset producing a point-in-time snapshot of all data inside of the Redis instance in the form of an .rdb file. Should not be called in production environments as it will block all other clients. Instead, use BGSave.
+      - `SAVE 60 100` dump dataset to disk every 60 seconds if at least 1000 keys changed
+      - `BGSAVE` saves the DB in the background and the parent continues to serve clients.
+
+  ### AOF - Append Only File
+    - Main persistence option.
+    - how it works every operation gets logged.
+    - log is the same formate used by clients.
+    - can be piped to another instance .
+    - dataset can be reconstructed.
+
+    ##### AOF Rewrite
+      - used when AOF file gets too big.
+      - Rewrite database from scratch.
+      - directly access data in memory.
+      - no need for disk access.
+      - once written, then temp file is synched on to disk using fsync.
+
+    ##### fsync Policies
+      - No fsync - Done by OS, usually every 30 seconds or so.
+      - fsync every second (default)
+      - fsync at every query (slow)
+
+    ##### AOF Advantage
+      - much more durable
+      - single file with no corruption
+      - automatically rewrites in the background if it gets too big
+      - easy to understand log / instructions.
+
+    ##### AOF Disadvantages
+      - Takes longer to load in memory on server restarts
+      - usually bigger than th equivalent RDB Files
+      - can be slower than RDB depending on the fsync policy
+      - more possible bugs
+
+# RDB and AOF in Action
+  ran into error on lecture 23
+
+# Node.js and redis
+  to start use node app
+  make sure redis server is open. from lecture 26
